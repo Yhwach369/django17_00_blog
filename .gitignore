@@ -1,0 +1,10 @@
+.idea/
+__pycache__/
+media/
+venv/
+*.sqlite3
+.env
+main.py
+
+
+

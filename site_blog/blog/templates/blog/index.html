@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Главная страница
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <section class="mb-5">
+        <div id="carouselExample" class="carousel slide">
+            <div class="carousel-inner">
+                {% for hero_image in hero_images %}
+                <div class="carousel-item active">
+                    <img src="{{ hero_image.image.url }}"
+                         class="d-block w-100" alt="..." style="height: 500px; object-fit: cover;">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+    <section class="mb-5">
+        <h2 class="text-center mb-5">Статьи</h2>
+
+        <div class="row row-gap-4">
+            {% for post in posts %}
+            <div class="col-3">
+                <div class="card">
+                    {% if post.preview %}
+                    <img src="{{ post.preview.url }}" class="card-img-top" alt="..."
+                         style="min-height: 350px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.name }}</h5>
+                        <p class="card-text">{{ post.short_description }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <b>Дата создания:</b><br>{{ post.created_at }}
+                        </li>
+                        <li class="list-group-item">
+                            <b>Категория: </b>{{ post.category }}
+                        </li>
+                        <li class="list-group-item">
+                            <b>Автор: </b>{{ post.author }}
+                        </li>
+                        <li class="list-group-item">
+                            <b>Просмотры: </b>{{ post.views }}
+                        </li>
+                    </ul>
+                    <div class="card-body">
+                        <a href="{{ post.get_absolute_url }}" class="card-link">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if posts.has_other_pages %}
+        <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-5">
+            <ul class="pagination">
+                {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link disabled" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for i in posts.paginator.page_range %}
+                {% if i == posts.number %}
+                <li class="page-item active"><a class="page-link">{{ i }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                 <li class="page-item">
+                    <a class="page-link disabled" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </section>
+    <section class="mb-5">
+        <h2 class="text-center mb-5">FAQ</h2>
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            {% for faq in faqs %}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panel-{{ faq.pk }}" aria-expanded="true"
+                            aria-controls="panel-{{ faq.pk }}">
+                        {{ faq.question }}
+                    </button>
+                </h2>
+                <div id="panel-{{ faq.pk }}" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        {{ faq.answer }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

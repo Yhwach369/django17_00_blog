@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Пост: {{ post.name }}
+{% endblock %}
+
+
+{% block extra_style %}
+<style>
+    .swiper {
+        width: 100%;
+        height: 100%;
+    }
+
+    .swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .swiper {
+        width: 100%;
+        height: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .swiper-slide {
+        background-size: cover;
+        background-position: center;
+    }
+
+    .mySwiper2 {
+        height: 80%;
+        width: 100%;
+    }
+
+    .mySwiper {
+        height: 20%;
+        box-sizing: border-box;
+        padding: 10px 0;
+    }
+
+    .mySwiper .swiper-slide {
+        width: 25%;
+        height: 100%;
+        opacity: 0.4;
+    }
+
+    .mySwiper .swiper-slide-thumb-active {
+        opacity: 1;
+    }
+
+    .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-6">
+            <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff"
+                 class="swiper mySwiper2">
+                <div class="swiper-wrapper">
+
+                    {% for obj in gallery %}
+                    <div class="swiper-slide">
+                        <img src="{{ obj.image.url }}"/>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+            <div thumbsSlider="" class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    {% for obj in gallery %}
+                    <div class="swiper-slide">
+                        <img src="{{ obj.image.url }}"/>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <h3 class="text-center">{{ post.name }}</h3>
+
+            <div class="row align-items-end mb-3">
+                <div class="col-6">
+                    <b>Краткое описание:</b>
+                    <p>{{ post.short_description }}</p>
+                </div>
+                {% if request.user == post.author %}
+                <div class="col-6 text-end">
+                    <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning">Изменить</a>
+                    <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger">Удалить</a>
+                </div>
+                {% endif %}
+            </div>
+
+
+            <ul class="list-group list-group-action">
+                <li class="list-group-item list-group-item-action">
+                    <b>Категория: </b>{{ post.category }}
+                </li>
+                <li class="list-group-item list-group-item-action">
+                    <b>Дата создания:</b>{{ post.created_at }}
+                </li>
+                <li class="list-group-item list-group-item-action">
+                    <b>Автор: </b>{{ post.author }}
+                </li>
+                <li class="list-group-item list-group-item-action">
+                    <b>Просмотры: </b>{{ post.views }}
+                </li>
+                <li class="list-group-item list-group-item-action">
+                    <b>Кол-во лайков: </b>{{ total_likes }}
+                </li>
+                <li class="list-group-item list-group-item-action">
+                    <b>Кол-во дизлайков: </b>{{ total_dislikes }}
+                </li>
+            </ul>
+
+            {% if request.user.is_authenticated and request.user != post.author %}
+            <div class="d-flex gap-3 justify-content-end">
+                <a href="{% url 'add_vote' post.pk 'add_like' %}" class="btn btn-success">Лайк</a>
+                <a href="{% url 'add_vote' post.pk 'add_dislike' %}" class="btn btn-danger">Дизлайк</a>
+            </div>
+            {% endif %}
+
+            <h3 class="text-center mt-3">Похожие статьи</h3>
+            <div class="swiper related-articles">
+                <div class="swiper-wrapper">
+                    {% for related in all_posts %}
+                    <div class="swiper-slide">
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{ related.get_preview }}" class="card-img-top" alt="{{ related.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ related.name }}</h5>
+                                <p class="card-text">{{ related.short_description }}</p>
+                                <a href="{{ related.get_absolute_url }}" class="btn btn-primary">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info mt-4">
+        <div class="card mb-4">
+            <div class="card-header text-center">
+                <b>Полное описание</b>
+            </div>
+            <div class="card-body">
+                {{ post.full_description }}
+            </div>
+        </div>
+
+        <h2 class="text-center mb-4">Отзывы</h2>
+        {% for comment in comments %}
+        <div class="card mb-3">
+            <div class="card-header">
+                {{ comment.user }} - {{ comment.created_at }}
+            </div>
+            <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                    <p>{{ comment.body }}</p>
+                </blockquote>
+            </div>
+        </div>
+        {% endfor %}
+
+
+        {% if request.user.is_authenticated %}
+        <form action="" method="post">
+            <h4>Оставить отзыв</h4>
+            {% csrf_token %}
+            {{ form }}
+            <button class="btn btn-dark mt-3">Отправить</button>
+        </form>
+        {% else %}
+        <p>Только авторизованные пользователи могут оставить комментарий</p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+
+<!-- Initialize Swiper -->
+{% block extra_script %}
+<script>
+    var swiper = new Swiper(".mySwiper", {
+        spaceBetween: 10,
+        slidesPerView: 4,
+        freeMode: true,
+        watchSlidesProgress: true,
+    });
+    var swiper2 = new Swiper(".mySwiper2", {
+        spaceBetween: 10,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        thumbs: {
+            swiper: swiper,
+        },
+    });
+    var swiper3 = new Swiper(".related-articles", {
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+    });
+</script>
+{% endblock %}

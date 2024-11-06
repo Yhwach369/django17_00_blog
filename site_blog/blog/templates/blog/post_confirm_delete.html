@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Удаление поста: {{ post.name }}
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <p>Вы действительно хотите удалить пост: <b>{{ post.name }}</b></p>
+
+    <input type="submit" value="да" class="btn btn-dark">
+    <a href="{% url 'post_detail' post.pk %}" class="btn btn-primary">Вернуться назад</a>
+
+</form>
+{% endblock %}

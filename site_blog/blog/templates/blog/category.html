@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Категория: {{ category.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <h2>
+            Категория: {{ category.name }}
+        </h2>
+        <div> <!--поля для сортировки-->
+            <a href="">По просмотрам</a>
+            <a href="">По названию</a>
+            <a href="">По дате создания</a>
+        </div>
+    </div>
+
+    <div class="row row-gap-4">
+        {% for post in posts %}
+        <div class="col-3">
+            <div class="card">
+                {% if post.preview %}
+                <img src="{{ post.preview.url }}" class="card-img-top" alt="..."
+                     style="min-height: 350px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.name }}</h5>
+                    <p class="card-text">{{ post.short_description }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <b>Дата создания:</b><br>{{ post.created_at }}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Категория: </b>{{ post.category }}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Автор: </b>{{ post.author }}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Просмотры: </b>{{ post.views }}
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <a href="#" class="card-link">Подробнее</a>
+                </div>
+            </div>
+        </div>
+
+        {% empty %}
+        <h2>Нет статей</h2>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
